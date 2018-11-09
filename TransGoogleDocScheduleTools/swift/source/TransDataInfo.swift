@@ -14,7 +14,7 @@ import Cocoa
  *            並無加上太多防呆，請謹慎使用。
  *            此為從某個 google excel 連結到另一個 google excel 欄位。
  */
-class TransDataInfo: NSObject {
+class TransDataInfo: Decodable {
     /** google doc url */
     let srcURL: String!
 
@@ -36,8 +36,12 @@ class TransDataInfo: NSObject {
     /** 需額外增加的空白行 */
     let extraEmptyRowNum: Int
 
+    /** 輸出的檔案名稱(含路徑) */
+    let outputFileName: String!
+
     init(_ srcURL: String, _ srcPageName: String, _ srcColumnName: String,
-         _ fromNum: Int, _ dealCount: Int, _ accumulateNum: Int, _ extraEmptyRowNum: Int) {
+         _ fromNum: Int, _ dealCount: Int, _ accumulateNum: Int, _ extraEmptyRowNum: Int,
+         _ outputFileName: String) {
         self.srcURL = srcURL
         self.srcPageName = srcPageName
         self.srcColumnName = srcColumnName
@@ -45,6 +49,23 @@ class TransDataInfo: NSObject {
         self.dealCount = dealCount
         self.accumulateNum = accumulateNum
         self.extraEmptyRowNum = extraEmptyRowNum
+        self.outputFileName = outputFileName
+    }
+
+    /**   */
+    class func crateWithJSON(_ data: Data) -> TransDataInfo? {
+        var jsonResult: TransDataInfo?
+
+        do {
+            jsonResult = try JSONDecoder().decode(TransDataInfo.self, from: data)
+
+            print(jsonResult!)
+
+        } catch {
+            print(error)
+        }
+
+        return jsonResult
     }
 
     /** 自動產生 mapping google excel 欄位資料 */
@@ -53,10 +74,9 @@ class TransDataInfo: NSObject {
 
         // 處理轉換字串的輸出內容.
         for count in 0 ..< dealCount {
-            
             // sample code
             // =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0","2018!E410")
-            
+
             // 處理通用規則.
             let tempLog: NSString = NSString(format: "=IMPORTRANGE(\"%@\", \"%@!%@%d\")",
                                              srcURL, srcPageName, srcColumnName,

@@ -12,31 +12,58 @@ import Foundation
 // Test Code，之後可以研究 main arguments 使用方式。
 // let elements = CommandLine.arguments
 
-print("Initial TransDataInfo!")
+// 使用 json 格式剖析.
 
-// 暫時寫死，之後可能改成讀取檔案方式.
-// let srcURL:String! = "https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0"
-// let srcPageName:String! = "2018"
-// let srcColumnName:String! = "E"
-// let fromNum:Int = 428
-// let dealCount:Int = 100
-// let accumulateNum:Int = 3
-// let outputFileName:String! = "Desktop/tempTransFile.txt"
-// let extraEmptyRowNum:Int = 0
+#if D_JSON_VER
 
-// 暫時寫死，之後可能改成讀取檔案方式.
-let srcURL: String! = "https://docs.google.com/spreadsheets/d/1EqJiTQy-6VSTkfuSAzJqK1hrx8WAnegj-FnejNEIamI/edit?pli=1#gid=713291970"
-let srcPageName: String! = "工作排程"
-let srcColumnName: String! = "S"
-let fromNum: Int = 3
-let dealCount: Int = 100
-let accumulateNum: Int = 1
-let outputFileName: String! = "Desktop/tempTransFile_mou.txt"
-let extraEmptyRowNum: Int = 2
+    print("Initial TransDataInfo!")
 
-print("create TransDataInfo")
-var dataInfo: TransDataInfo = TransDataInfo(srcURL, srcPageName, srcColumnName,
-                                            fromNum, dealCount, accumulateNum, extraEmptyRowNum)
+    let jsonData = """
+    {
+      "srcURL": "https://docs.google.com/spreadsheets/d/1EqJiTQy-6VSTkfuSAzJqK1hrx8WAnegj-FnejNEIamI/edit?pli=1#gid=713291970",
+      "srcPageName": "工作排程",
+      "srcColumnName": "S",
+      "fromNum": 3,
+      "dealCount": 100,
+      "accumulateNum": 1,
+      "extraEmptyRowNum": 2,
+      "outputFileName": "Desktop/tempTransFile_mou.txt"
+    }
+    """.data(using: .utf8)!
+
+    print("create TransDataInfo")
+    var dataInfo: TransDataInfo = TransDataInfo.crateWithJSON(jsonData)!
+
+#else
+
+    print("Initial TransDataInfo!")
+
+    // 暫時寫死，之後可能改成讀取檔案方式.
+    // let srcURL:String! = "https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0"
+    // let srcPageName:String! = "2018"
+    // let srcColumnName:String! = "E"
+    // let fromNum:Int = 428
+    // let dealCount:Int = 100
+    // let accumulateNum:Int = 3
+    // let extraEmptyRowNum:Int = 0
+    // let outputFileName:String! = "Desktop/tempTransFile.txt"
+
+    // 暫時寫死，之後可能改成讀取檔案方式.
+    let srcURL: String! = "https://docs.google.com/spreadsheets/d/1EqJiTQy-6VSTkfuSAzJqK1hrx8WAnegj-FnejNEIamI/edit?pli=1#gid=713291970"
+    let srcPageName: String! = "工作排程"
+    let srcColumnName: String! = "S"
+    let fromNum: Int = 3
+    let dealCount: Int = 100
+    let accumulateNum: Int = 1
+    let extraEmptyRowNum: Int = 2
+    let outputFileName: String! = "Desktop/tempTransFile_mou.txt"
+
+    print("create TransDataInfo")
+
+    var dataInfo: TransDataInfo = TransDataInfo(srcURL, srcPageName, srcColumnName,
+                                                fromNum, dealCount, accumulateNum, extraEmptyRowNum, outputFileName)
+
+#endif
 
 print("deal TransDataInfo trans log")
 
@@ -44,8 +71,8 @@ var outputLogs: NSArray! = dataInfo.generatorTransInfo()
 
 let homeDirURL: URL = URL(fileURLWithPath: NSHomeDirectory())
 
-let pathURL: URL = homeDirURL.appendingPathComponent(outputFileName)
-let path = homeDirURL.absoluteString + outputFileName
+let pathURL: URL = homeDirURL.appendingPathComponent(dataInfo.outputFileName)
+let path = homeDirURL.absoluteString + dataInfo.outputFileName
 
 // 處理寫檔.
 let arrayToSave = NSArray(array: outputLogs)
