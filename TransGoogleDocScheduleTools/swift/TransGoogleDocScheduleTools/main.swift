@@ -18,18 +18,10 @@ import Foundation
 
     print("Initial TransDataInfo!")
 
-    let jsonData = """
-    {
-      "srcURL": "https://docs.google.com/spreadsheets/d/1EqJiTQy-6VSTkfuSAzJqK1hrx8WAnegj-FnejNEIamI/edit?pli=1#gid=713291970",
-      "srcPageName": "工作排程",
-      "srcColumnName": "S",
-      "fromNum": 3,
-      "dealCount": 100,
-      "accumulateNum": 1,
-      "extraEmptyRowNum": 2,
-      "outputFileName": "Desktop/tempTransFile_mou.txt"
-    }
-    """.data(using: .utf8)!
+    // 讀取設定檔，需為 json 格式.
+    let srcConfigFileURL: URL = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/temp/TransGoogleDocTest/catTest.json")
+
+    let jsonData: Data = try Data(contentsOf: srcConfigFileURL)
 
     print("create TransDataInfo")
     var dataInfo: TransDataInfo = TransDataInfo.crateWithJSON(jsonData)!

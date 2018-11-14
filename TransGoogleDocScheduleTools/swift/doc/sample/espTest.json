@@ -1,0 +1,10 @@
+    {
+      "srcURL": "https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0",
+      "srcPageName": "2018",
+      "srcColumnName": "E",
+      "fromNum": 428,
+      "dealCount": 100,
+      "accumulateNum": 3,
+      "extraEmptyRowNum": 0,
+      "outputFileName": "/Desktop/temp/TransGoogleDocTest/tempTransFile.txt"
+    }

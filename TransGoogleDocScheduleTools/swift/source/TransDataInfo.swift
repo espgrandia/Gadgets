@@ -52,7 +52,23 @@ class TransDataInfo: Decodable {
         self.outputFileName = outputFileName
     }
 
-    /**   */
+    /**
+     * @brief - 藉由輸入json string產生TransDataInfo instance 的類別方法.
+     * @param - data : json string to Data (.utf8 format)
+     * @details - 以下為自測時的 sample code
+     //     let jsonData = """
+     //     {
+     //         "srcURL": "https://docs.google.com/spreadsheets/d/1EqJiTQy-6VSTkfuSAzJqK1hrx8WAnegj-FnejNEIamI/edit?pli=1#gid=713291970",
+     //         "srcPageName": "工作排程",
+     //         "srcColumnName": "S",
+     //         "fromNum": 3,
+     //         "dealCount": 100,
+     //         "accumulateNum": 1,
+     //         "extraEmptyRowNum": 2,
+     //         "outputFileName": "Desktop/tempTransFile_mou.txt"
+     //     }
+     //     """.data(using: .utf8)!
+     */
     class func crateWithJSON(_ data: Data) -> TransDataInfo? {
         var jsonResult: TransDataInfo?
 
