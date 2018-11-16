@@ -8,20 +8,29 @@
 
 import Foundation
 
-// 延伸議題:
-// Test Code，之後可以研究 main arguments 使用方式。
-// let elements = CommandLine.arguments
-
-// 使用 json 格式剖析.
-
 #if D_JSON_VER
+
+    // parse main arguments
+    print("Parse command arguments")
+
+    print("CommandLine.argc : \(CommandLine.argc)")
+    print("CommandLine.arguments : \(CommandLine.arguments)")
+
+    var srcConfigFileURL: URL?
+
+    // 判斷是否有帶入參數，第一個為 file path.
+    if CommandLine.argc > 1 {
+        srcConfigFileURL = URL(fileURLWithPath: CommandLine.arguments[1])
+    }
 
     print("Initial TransDataInfo!")
 
-    // 讀取設定檔，需為 json 格式.
-    let srcConfigFileURL: URL = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/temp/TransGoogleDocTest/catTest.json")
+    // 讀取設定檔，需為 json 格式，之前作法，之後可以移除.
+    if srcConfigFileURL == nil {
+        srcConfigFileURL = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/temp/TransGoogleDocTest/catTest.json")
+    }
 
-    let jsonData: Data = try Data(contentsOf: srcConfigFileURL)
+    let jsonData: Data = try Data(contentsOf: srcConfigFileURL!)
 
     print("create TransDataInfo")
     var dataInfo: TransDataInfo = TransDataInfo.crateWithJSON(jsonData)!
