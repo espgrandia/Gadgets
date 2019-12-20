@@ -1,0 +1,10 @@
+{
+  "srcURL": "https://docs.google.com/spreadsheets/d/1dUTkFCMOTZ80AegyDYuMNrHyNVyA-dytsPSJvdM9FX8/edit#gid=1638438240",
+  "srcPageName": "每日工作_RD_2019",
+  "srcColumnName": "$C$4",
+  "fromNum": 6,
+  "dealCount": 365,
+  "accumulateNum": 1,
+  "extraEmptyRowNum": 2,
+  "outputFileName": "/Desktop/temp/TransGoogleDocTest/08_3_michael.ma_TransOutputFile.txt"
+}
