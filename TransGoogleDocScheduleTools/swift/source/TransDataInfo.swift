@@ -90,19 +90,38 @@ class TransDataInfo: Decodable {
 
         // 處理轉換字串的輸出內容.
         for count in 0 ..< dealCount {
-            // sample code
-            // =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0","2018!E410")
 
             // 處理通用規則.
-            let tempLog: NSString = NSString(format: "=IMPORTRANGE(\"%@\", \"%@!%@%d\")",
-                                             srcURL, srcPageName, srcColumnName,
-                                             fromNum + count * accumulateNum)
+            // 判斷 srcColumnName 是否有包含 $，
+            // 有的話表示是需要 mapping 另一個欄位的格式 : 要用到 T
+            var tempLog:String
+            
+            if self.srcColumnName.contains("$")
+            {
+                // strColumnName 為 有 $，是 mapping 到某個欄位的方式。
+                //            =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1dUTkFCMOTZ80AegyDYuMNrHyNVyA-dytsPSJvdM9FX8/edit#gid=1638438240", T("每日工作_RD_2019!")&T($C$2)&T("6"))
+                
+                tempLog = NSString(format: "=IMPORTRANGE(\"%@\", T(\"%@!\")&T(%@)&T(\"%d\"))",
+                                                 self.srcURL, self.srcPageName, self.srcColumnName,
+                                                 self.fromNum + count * self.accumulateNum) as String
+            }
+            else
+            {
+                // sample code
+                //  strColumnName 為 一般方式。
+                // =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0","2018!E410")
+
+                tempLog = NSString(format: "=IMPORTRANGE(\"%@\", \"%@!%@%d\")",
+                                                 self.srcURL, self.srcPageName, self.srcColumnName,
+                                                 self.fromNum + count * self.accumulateNum) as String
+            }
+                
 
             outputLogs.add(tempLog)
 
             // 額外處理是否需新增空白行.
-            if extraEmptyRowNum > 0 {
-                for _ in 0 ..< extraEmptyRowNum {
+            if self.extraEmptyRowNum > 0 {
+                for _ in 0 ..< self.extraEmptyRowNum {
                     outputLogs.add("")
                 }
             }
