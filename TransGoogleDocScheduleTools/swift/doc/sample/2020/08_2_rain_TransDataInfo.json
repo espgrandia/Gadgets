@@ -1,0 +1,10 @@
+{
+  "srcURL": "$K$2",
+  "srcPageName": "$K$3",
+  "srcColumnName": "$K$4",
+  "fromNum": 3,
+  "dealCount": 370,
+  "accumulateNum": 1,
+  "extraEmptyRowNum": 2,
+  "outputFileName": "/Desktop/temp/TransGoogleDocTest/08_2_rain_TransOutputFile.txt"
+}
