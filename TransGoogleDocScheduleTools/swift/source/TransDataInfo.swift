@@ -17,28 +17,28 @@ import Cocoa
 class TransDataInfo: Decodable {
     /** google doc url */
     let srcURL: String!
-
+    
     /** google doc page name */
     let srcPageName: String!
-
+    
     /** google doc column name */
     let srcColumnName: String!
-
+    
     /** 起始的數字 */
     let fromNum: Int
-
+    
     /** for 迴圈處理次數 */
     let dealCount: Int
-
+    
     /** 每次需疊加的數字 */
     let accumulateNum: Int
-
+    
     /** 需額外增加的空白行 */
     let extraEmptyRowNum: Int
-
+    
     /** 輸出的檔案名稱(含路徑) */
     let outputFileName: String!
-
+    
     init(_ srcURL: String, _ srcPageName: String, _ srcColumnName: String,
          _ fromNum: Int, _ dealCount: Int, _ accumulateNum: Int, _ extraEmptyRowNum: Int,
          _ outputFileName: String) {
@@ -51,7 +51,7 @@ class TransDataInfo: Decodable {
         self.extraEmptyRowNum = extraEmptyRowNum
         self.outputFileName = outputFileName
     }
-
+    
     /**
      * @brief - 藉由輸入json string產生TransDataInfo instance 的類別方法.
      * @param - data : json string to Data (.utf8 format)
@@ -71,54 +71,54 @@ class TransDataInfo: Decodable {
      */
     class func crateWithJSON(_ data: Data) -> TransDataInfo? {
         var jsonResult: TransDataInfo?
-
+        
         do {
             jsonResult = try JSONDecoder().decode(TransDataInfo.self, from: data)
-
+            
             print(jsonResult!)
-
+            
         } catch {
             print(error)
         }
-
+        
         return jsonResult
     }
-
+    
     /** 自動產生 mapping google excel 欄位資料 */
     func generatorTransInfo() -> NSArray! {
         let outputLogs: NSMutableArray! = NSMutableArray()
-
+        
         // 處理轉換字串的輸出內容.
         for count in 0 ..< dealCount {
-
+            
             // 處理通用規則.
-            // 判斷 srcColumnName 是否有包含 $，
+            // 判斷 srcURL，srcPageName， srcColumnName 各自是否有包含 $，
             // 有的話表示是需要 mapping 另一個欄位的格式 : 要用到 T
             var tempLog:String
             
-            if self.srcColumnName.contains("$")
-            {
-                // strColumnName 為 有 $，是 mapping 到某個欄位的方式。
-                //            =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1dUTkFCMOTZ80AegyDYuMNrHyNVyA-dytsPSJvdM9FX8/edit#gid=1638438240", T("每日工作_RD_2019!")&T($C$2)&T("6"))
-                
-                tempLog = NSString(format: "=IMPORTRANGE(\"%@\", T(\"%@!\")&T(%@)&T(\"%d\"))",
-                                                 self.srcURL, self.srcPageName, self.srcColumnName,
-                                                 self.fromNum + count * self.accumulateNum) as String
-            }
-            else
-            {
-                // sample code
-                //  strColumnName 為 一般方式。
-                // =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1IDwIdGm9hBOLFWQ2JV39BJD3DwcODdhFHlf5RMU9itw/edit#gid=0","2018!E410")
-
-                tempLog = NSString(format: "=IMPORTRANGE(\"%@\", \"%@!%@%d\")",
-                                                 self.srcURL, self.srcPageName, self.srcColumnName,
-                                                 self.fromNum + count * self.accumulateNum) as String
-            }
-                
-
+            // =IMPORTRANGE($J$2, T($J$3)&T("!")&T($J$4)&T("3"))
+            // 需判斷是否需要
+            var tempSrcURL:String
+            tempSrcURL = self.srcURL.contains("$") ? self.srcURL : String.init(format: "\"%@\"", self.srcURL)
+            
+            var tempSrcPageName:String
+            tempSrcPageName = self.srcPageName.contains("$") ? self.srcPageName : String.init(format: "\"%@\"", self.srcPageName)
+            
+            var tempSrcColumnName:String
+            tempSrcColumnName = self.srcColumnName.contains("$") ? self.srcColumnName : String.init(format: "\"%@\"", self.srcColumnName)
+            
+            // sample : 只有 srcColumnName 有 $
+            //                =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1dUTkFCMOTZ80AegyDYuMNrHyNVyA-dytsPSJvdM9FX8/edit#gid=1638438240", T("每日工作_RD_2019")&T("!")&T($K$4)&T("6"))
+            
+            // sample :srcURL，srcPageName， srcColumnName 都有 $
+            // =IMPORTRANGE($J$2, T($J$3)&T("!")&T($J$4)&T("3"))
+            
+            tempLog = NSString(format: "=IMPORTRANGE(%@, T(%@)&T(\"!\")&T(%@)&T(\"%d\"))",
+                               tempSrcURL, tempSrcPageName, tempSrcColumnName,
+                               self.fromNum + count * self.accumulateNum) as String
+            
             outputLogs.add(tempLog)
-
+            
             // 額外處理是否需新增空白行.
             if self.extraEmptyRowNum > 0 {
                 for _ in 0 ..< self.extraEmptyRowNum {
@@ -126,7 +126,7 @@ class TransDataInfo: Decodable {
                 }
             }
         }
-
+        
         return outputLogs.copy() as? NSArray
     }
 }
