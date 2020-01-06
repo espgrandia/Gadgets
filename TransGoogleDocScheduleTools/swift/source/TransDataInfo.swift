@@ -91,21 +91,8 @@ class TransDataInfo: Decodable {
         // 處理轉換字串的輸出內容.
         for count in 0 ..< dealCount {
             
-            // 處理通用規則.
             // 判斷 srcURL，srcPageName， srcColumnName 各自是否有包含 $，
             // 有的話表示是需要 mapping 另一個欄位的格式 : 要用到 T
-            var tempLog:String
-            
-            // =IMPORTRANGE($J$2, T($J$3)&T("!")&T($J$4)&T("3"))
-            // 需判斷是否需要
-            var tempSrcURL:String
-            tempSrcURL = self.srcURL.contains("$") ? self.srcURL : String.init(format: "\"%@\"", self.srcURL)
-            
-            var tempSrcPageName:String
-            tempSrcPageName = self.srcPageName.contains("$") ? self.srcPageName : String.init(format: "\"%@\"", self.srcPageName)
-            
-            var tempSrcColumnName:String
-            tempSrcColumnName = self.srcColumnName.contains("$") ? self.srcColumnName : String.init(format: "\"%@\"", self.srcColumnName)
             
             // sample : 只有 srcColumnName 有 $
             //                =IMPORTRANGE("https://docs.google.com/spreadsheets/d/1dUTkFCMOTZ80AegyDYuMNrHyNVyA-dytsPSJvdM9FX8/edit#gid=1638438240", T("每日工作_RD_2019")&T("!")&T($K$4)&T("6"))
@@ -113,9 +100,11 @@ class TransDataInfo: Decodable {
             // sample :srcURL，srcPageName， srcColumnName 都有 $
             // =IMPORTRANGE($J$2, T($J$3)&T("!")&T($J$4)&T("3"))
             
-            tempLog = NSString(format: "=IMPORTRANGE(%@, T(%@)&T(\"!\")&T(%@)&T(\"%d\"))",
-                               tempSrcURL, tempSrcPageName, tempSrcColumnName,
-                               self.fromNum + count * self.accumulateNum) as String
+            let tempLog:String = NSString(format: "=IMPORTRANGE(%@, T(%@)&T(\"!\")&T(%@)&T(\"%d\"))",
+                                          transSrcMappingString(self.srcURL),
+                                          transSrcMappingString(self.srcPageName),
+                                          transSrcMappingString(self.srcColumnName),
+                                          self.fromNum + count * self.accumulateNum) as String
             
             outputLogs.add(tempLog)
             
@@ -128,5 +117,12 @@ class TransDataInfo: Decodable {
         }
         
         return outputLogs.copy() as? NSArray
+    }
+    
+    /**
+     * @brief 判斷輸入string 是否包含 $，有則直接回傳，無則當一般字串來引用(需額外加上 \")。
+     */
+    func transSrcMappingString(_ srcMappingString:String) -> String! {
+        return srcMappingString.contains("$") ? srcMappingString : String.init(format: "\"%@\"", srcMappingString)
     }
 }
